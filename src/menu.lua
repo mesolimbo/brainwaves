@@ -8,5 +8,9 @@ function menu_update()
 end
 
 function menu_draw()
-    print("menu!") --menu draw code
+    map(16, 0, 0, 0, 16, 16)
+    print("\139 \145 to select knob",23,47,10)
+    print("\148 \131 to adjust knob",23,67,10)
+    print("adjust brainwaves to\n  cheer up monster",23,87,10)
+    print("press \151 to continue...",23,107,10)
 end
