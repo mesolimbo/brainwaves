@@ -2,6 +2,8 @@ pico-8 cartridge // http://www.pico-8.com
 version 43
 __lua__
 #include src/main.lua
+#include src/menu.lua
+#include src/game.lua
 
 __gfx__
 00000000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111dddddddddddddddd00000000
