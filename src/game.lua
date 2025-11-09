@@ -1,13 +1,13 @@
 function game_init()
     _update=game_update
     _draw=game_draw
-    brainwave = init_brain()
+    brainwave = init_brainwave()
 end
 
-function init_brain()
+function init_brainwave()
     local brain = {}
-    brain.wavelength = flr(rnd(2)) + 4  -- Random integer from 1-5
-    brain.amplitude = flr(rnd(4)) + 1   -- Random integer from 2-4
+    brain.wavelength = flr(rnd(2)) + 4
+    brain.amplitude = flr(rnd(4)) + 1
     brain.tracer_pos = 0
     return brain
 end
@@ -27,6 +27,9 @@ end
 function game_draw()
     map(0, 0, 0, 0, 16, 16)
     draw_brainwave()
+    rectfill(112, 101, 114, 104, 8)
+    spr(48, 25, 119)
+    spr(48, 49, 119)
 end
 
 function draw_brainwave()
@@ -34,19 +37,19 @@ function draw_brainwave()
     local y_end = 59
 
     for y = y_start, y_end do
-        plot_wave(y, y_start, y_end, 14)
+        plot_brainwave(y, y_start, y_end, 14)
     end
 
     local tracer_start = flr(brainwave.tracer_pos)
     for i = 0, 3 do
         local tracer_y = y_start + tracer_start - i
         if tracer_y >= y_start and tracer_y <= y_end then
-            plot_wave(tracer_y, y_start, y_end, 2)
+            plot_brainwave(tracer_y, y_start, y_end, 2)
         end
     end
 end
 
-function plot_wave(y, y_start, y_end, color)
+function plot_brainwave(y, y_start, y_end, color)
     local x_center = 104
     local x_range = 3.5
     local total_height = y_end - y_start
