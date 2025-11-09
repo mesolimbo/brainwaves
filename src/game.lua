@@ -28,7 +28,10 @@ function game_draw()
     map(0, 0, 0, 0, 16, 16)
     draw_brainwave()
     rectfill(112, 101, 114, 104, 8)
+
     spr(48, 25, 119)
+    rect(24, 118, 32, 122, 14)
+
     spr(48, 49, 119)
 end
 

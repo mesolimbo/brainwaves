@@ -9,3 +9,9 @@ ProjectFileDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
  -home "$ProjectFileDir/.pico8"           \
  -run "$ProjectFileDir/cart.p8"           \
  -export "$ProjectFileDir/dist/index.html"
+
+# Zip contents of dist into brainwaves.zip or output message and exit with error code
+if ! (cd "$ProjectFileDir/dist" && zip -r "$ProjectFileDir/brainwaves.zip" . && cd "$ProjectFileDir"); then
+    echo "Error: Could not zip dist folder."
+    exit 1
+fi
