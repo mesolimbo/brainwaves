@@ -33,6 +33,8 @@ function game_draw()
     rect(24, 118, 32, 122, 14)
 
     spr(48, 49, 119)
+
+    print("score: ".."00010", 68, 118, 12)
 end
 
 function draw_brainwave()
