@@ -9,8 +9,10 @@ end
 
 function menu_draw()
     map(16, 0, 0, 0, 16, 16)
-    print("\139 \145 to select control",23,47,10)
-    print("\148 \131 to adjust control",23,67,10)
-    print("adjust brainwaves to\n  cheer up monsters",23,87,10)
-    print("press \151 to continue...",23,107,10)
+    map(16, 0, 0, 0, 16, 16)
+    print("\139 \145 to select control",18,47,10)
+    print("\148 \131 to adjust control",18,57,10)
+    print("\142 to press control",30,67,10)
+    print("adjust brainwaves to\n  cheer up monsters",23,84,10)
+    print("press \151 to continue...",18,107,10)
 end
