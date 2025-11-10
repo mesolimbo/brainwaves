@@ -1,15 +1,23 @@
 function game_init()
-    _update=game_update
-    _draw=game_draw
+    _update = game_update
+    _draw = game_draw
+    device = init_device()
     brainwave = init_brainwave()
+    score = 13
+end
+
+function init_device()
+    return {
+        controls = {}
+    }
 end
 
 function init_brainwave()
-    local brain = {}
-    brain.wavelength = flr(rnd(2)) + 4
-    brain.amplitude = flr(rnd(4)) + 1
-    brain.tracer_pos = 0
-    return brain
+    return {
+        wavelength = flr(rnd(2)) + 4,
+        amplitude = flr(rnd(4)) + 1,
+        tracer_pos = 0
+    }
 end
 
 function game_update()
@@ -34,7 +42,7 @@ function game_draw()
 
     spr(48, 49, 119)
 
-    print("score: ".."00010", 68, 118, 12)
+    draw_score()
 end
 
 function draw_brainwave()
@@ -64,4 +72,15 @@ function plot_brainwave(y, y_start, y_end, color)
     local x = x_center + (sine_value * brainwave.amplitude * x_range / 4)
 
     pset(x, y, color)
+end
+
+function draw_score()
+    local padded_score = ""
+    local score_str = tostring(score)
+
+    for i = 1, 5 - #score_str do
+        padded_score = padded_score .. "0"
+    end
+    padded_score = padded_score .. score_str
+    print("score: " .. padded_score, 68, 118, 12)
 end
