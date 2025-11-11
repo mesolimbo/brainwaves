@@ -3,7 +3,7 @@ function game_init()
     _draw = game_draw
     device = init_device()
     brainwave = init_brainwave()
-    score = 13
+    score = 0
 end
 
 function init_device()
