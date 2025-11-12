@@ -8,7 +8,9 @@ end
 
 function init_device()
     return {
-        controls = {}
+        selected_control = 0, -- 0=freq, 1=amp, 2=skip button
+        freq_value = 0,       -- 0-4
+        amp_value = 0         -- 0-4
     }
 end
 
@@ -21,8 +23,47 @@ function init_brainwave()
 end
 
 function game_update()
-    if (btnp(5)) then menu_init() end
+    handle_device_input()
     update_brainwave()
+end
+
+function handle_device_input()
+    -- Left/Right: Navigate between controls
+    if btnp(0) then -- Left
+        device.selected_control = device.selected_control - 1
+        if device.selected_control < 0 then
+            device.selected_control = 2
+        end
+    elseif btnp(1) then -- Right
+        device.selected_control = device.selected_control + 1
+        if device.selected_control > 2 then
+            device.selected_control = 0
+        end
+    end
+
+    -- Up/Down: Adjust slider values
+    if btnp(2) then -- Up
+        if device.selected_control == 0 then
+            device.freq_value = min(4, device.freq_value + 1)
+        elseif device.selected_control == 1 then
+            device.amp_value = min(4, device.amp_value + 1)
+        end
+    elseif btnp(3) then -- Down
+        if device.selected_control == 0 then
+            device.freq_value = max(0, device.freq_value - 1)
+        elseif device.selected_control == 1 then
+            device.amp_value = max(0, device.amp_value - 1)
+        end
+    end
+
+    -- X/O: Activate skip button or return to menu
+    if btnp(4) or btnp(5) then
+        if device.selected_control == 2 then
+            -- Skip button pressed - add your skip logic here
+            -- For now, return to menu
+            menu_init()
+        end
+    end
 end
 
 function update_brainwave()
@@ -38,9 +79,16 @@ function game_draw()
     rectfill(112, 101, 114, 104, 8)
 
     spr(48, 25, 119)
-    rect(24, 118, 32, 122, 14)
-
     spr(48, 49, 119)
+
+    -- Highlight selected control
+    if device.selected_control == 0 then
+        rect(24, 118, 32, 122, 14) -- Highlight Freq control
+    elseif device.selected_control == 1 then
+        rect(48, 118, 56, 122, 14) -- Highlight Amp control
+    elseif device.selected_control == 2 then
+        spr(99, 64, 88, 3, 2) -- Highlight Skip button
+    end
 
     draw_score()
 end
