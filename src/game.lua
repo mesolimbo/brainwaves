@@ -14,6 +14,24 @@ function log(message)
     end
 end
 
+function happymeter()
+    -- Calculate distance between slider values and brainwave values
+    local freq_diff = abs(device.freq_value - brainwave.wavelength)
+    local amp_diff = abs(device.amp_value - brainwave.amplitude)
+    local distance = sqrt(freq_diff * freq_diff + amp_diff * amp_diff)
+
+    -- Max possible distance (worst case: sliders at 0,0 vs brainwave at 5,4)
+    local max_distance = sqrt(5 * 5 + 4 * 4)
+
+    -- Normalize to 0-1 range, invert so smaller distance = higher happiness
+    local normalized = 1 - (distance / max_distance)
+
+    -- Scale to 1-5 range
+    local happiness = flr(normalized * 4) + 1
+
+    return max(1, min(5, happiness))
+end
+
 function init_device()
     return {
         selected_control = 0, -- 0=freq, 1=amp, 2=skip button
@@ -71,8 +89,10 @@ function handle_device_input()
 
     -- Log values when slider changes
     if slider_changed then
+        local happiness = happymeter()
         log("sliders   - freq: " .. device.freq_value .. " amp: " .. device.amp_value)
         log("brainwave - freq: " .. brainwave.wavelength .. " amp: " .. brainwave.amplitude)
+        log("happiness: " .. happiness)
     end
 
     -- X button: Always returns to menu
@@ -98,7 +118,17 @@ end
 function game_draw()
     map(0, 0, 0, 0, 16, 16)
     draw_brainwave()
-    rectfill(112, 101, 114, 104, 8)
+
+    -- Draw happiness meter (moves up 5 pixels per happiness level)
+    local happiness = happymeter()
+    local meter_y1 = 101 - (happiness - 1) * 5
+    local meter_y2 = 104 - (happiness - 1) * 5
+
+    -- Color changes: red(8) -> orange(9) -> yellow(10) -> green(11) -> blue(12)
+    local colors = {8, 9, 10, 11, 12}
+    local meter_color = colors[happiness]
+
+    rectfill(112, meter_y1, 114, meter_y2, meter_color)
 
     -- Calculate slider positions (base y=119, move up 8 pixels per level)
     local freq_y = 119 - (device.freq_value * 8)
