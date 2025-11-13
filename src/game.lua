@@ -3,14 +3,22 @@ function game_init()
     _draw = game_draw
     device = init_device()
     brainwave = init_brainwave()
+    is_logged = true
     score = 0
+    log("== Game Init ==")
+end
+
+function log(message)
+    if is_logged then
+        printh(message, ".tmp/debug_log.txt")
+    end
 end
 
 function init_device()
     return {
         selected_control = 0, -- 0=freq, 1=amp, 2=skip button
-        freq_value = 0,       -- 0-4
-        amp_value = 0         -- 0-4
+        freq_value = 0,       -- 0-5
+        amp_value = 0         -- 0-5
     }
 end
 
@@ -42,27 +50,41 @@ function handle_device_input()
     end
 
     -- Up/Down: Adjust slider values
+    local slider_changed = false
     if btnp(2) then -- Up
         if device.selected_control == 0 then
-            device.freq_value = min(4, device.freq_value + 1)
+            device.freq_value = min(5, device.freq_value + 1)
+            slider_changed = true
         elseif device.selected_control == 1 then
-            device.amp_value = min(4, device.amp_value + 1)
+            device.amp_value = min(5, device.amp_value + 1)
+            slider_changed = true
         end
     elseif btnp(3) then -- Down
         if device.selected_control == 0 then
             device.freq_value = max(0, device.freq_value - 1)
+            slider_changed = true
         elseif device.selected_control == 1 then
             device.amp_value = max(0, device.amp_value - 1)
+            slider_changed = true
         end
     end
 
-    -- X/O: Activate skip button or return to menu
-    if btnp(4) or btnp(5) then
-        if device.selected_control == 2 then
-            -- Skip button pressed - add your skip logic here
-            -- For now, return to menu
-            menu_init()
-        end
+    -- Log values when slider changes
+    if slider_changed then
+        log("sliders   - freq: " .. device.freq_value .. " amp: " .. device.amp_value)
+        log("brainwave - freq: " .. brainwave.wavelength .. " amp: " .. brainwave.amplitude)
+    end
+
+    -- X button: Always returns to menu
+    if btnp(5) then
+        menu_init()
+    end
+
+    -- O button: Skip when skip button is selected
+    if btnp(4) and device.selected_control == 2 then
+        -- Reset device and brainwave, but keep score
+        device = init_device()
+        brainwave = init_brainwave()
     end
 end
 
@@ -78,14 +100,19 @@ function game_draw()
     draw_brainwave()
     rectfill(112, 101, 114, 104, 8)
 
-    spr(48, 25, 119)
-    spr(48, 49, 119)
+    -- Calculate slider positions (base y=119, move up 8 pixels per level)
+    local freq_y = 119 - (device.freq_value * 8)
+    local amp_y = 119 - (device.amp_value * 8)
+
+    -- Draw slider sprites
+    spr(48, 25, freq_y)
+    spr(48, 49, amp_y)
 
     -- Highlight selected control
     if device.selected_control == 0 then
-        rect(24, 118, 32, 122, 14) -- Highlight Freq control
+        rect(24, freq_y - 1, 32, freq_y + 3, 14) -- Highlight Freq control
     elseif device.selected_control == 1 then
-        rect(48, 118, 56, 122, 14) -- Highlight Amp control
+        rect(48, amp_y - 1, 56, amp_y + 3, 14) -- Highlight Amp control
     elseif device.selected_control == 2 then
         spr(99, 64, 88, 3, 2) -- Highlight Skip button
     end
@@ -126,7 +153,7 @@ function draw_score()
     local padded_score = ""
     local score_str = tostring(score)
 
-    for i = 1, 5 - #score_str do
+    for _ = 1, 5 - #score_str do
         padded_score = padded_score .. "0"
     end
     padded_score = padded_score .. score_str
