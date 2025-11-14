@@ -138,6 +138,7 @@ function game_draw()
         spr(99, 64, 88, 3, 2) -- Highlight Skip button
     end
 
+    draw_monster()
     draw_score()
 end
 
@@ -179,4 +180,21 @@ function draw_score()
     end
     padded_score = padded_score .. score_str
     print("score: " .. padded_score, 68, 118, 12)
+end
+
+function draw_monster()
+    local happiness = happymeter()
+
+    -- Always draw base (Mad, happiness 1)
+    spr(70, 34, 34, 3, 3)
+
+    if happiness == 2 then
+        spr(76, 34, 42, 3, 2) -- Fear
+    elseif happiness == 3 then
+        spr(73, 34, 42, 3, 2) -- Sad
+    elseif happiness == 4 then
+        spr(105, 34, 42, 3, 2) -- Shy
+    elseif happiness == 5 then
+        spr(108, 34, 42, 3, 2) -- Joy
+    end
 end
