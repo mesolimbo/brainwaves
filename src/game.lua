@@ -7,22 +7,12 @@ function game_init()
     log("== Game Init ==")
 end
 
-function happymeter()
-    local freq_diff = abs(device.freq_value - brainwave.wavelength)
-    local amp_diff = abs(device.amp_value - brainwave.amplitude)
-    local distance = sqrt(freq_diff * freq_diff + amp_diff * amp_diff)
-    local max_distance = sqrt(5 * 5 + 4 * 4)
-    local normalized = 1 - (distance / max_distance)
-    local happiness = flr(normalized * 4) + 1
-
-    return max(1, min(5, happiness))
-end
-
 function init_device()
     return {
         selected_control = 0,
         freq_value = 0,
-        amp_value = 0
+        amp_value = 0,
+        joy_attained = false
     }
 end
 
@@ -37,6 +27,34 @@ end
 function game_update()
     handle_device_input()
     update_brainwave()
+    check_joy()
+end
+
+function check_joy()
+    local happiness = happymeter()
+    if happiness == 5 and not device.joy_attained then
+        device.joy_attained = true
+        score = score + 1
+        log("joy attained! score: " .. score)
+    end
+end
+
+function update_brainwave()
+    brainwave.tracer_pos = 1 + brainwave.tracer_pos
+    if brainwave.tracer_pos > 34 then
+        brainwave.tracer_pos = 0
+    end
+end
+
+function happymeter()
+    local freq_diff = abs(device.freq_value - brainwave.wavelength)
+    local amp_diff = abs(device.amp_value - brainwave.amplitude)
+    local distance = sqrt(freq_diff * freq_diff + amp_diff * amp_diff)
+    local max_distance = sqrt(5 * 5 + 4 * 4)
+    local normalized = 1 - (distance / max_distance)
+    local happiness = flr(normalized * 4) + 1
+
+    return max(1, min(5, happiness))
 end
 
 function handle_device_input()
@@ -80,23 +98,11 @@ function handle_device_input()
         log("happiness: " .. happiness)
     end
 
-    -- X button: Always returns to menu
-    if btnp(5) then
-        menu_init()
-    end
-
     -- O button: Skip when skip button is selected
     if btnp(4) and device.selected_control == 2 then
         -- Reset device and brainwave, but keep score
         device = init_device()
         brainwave = init_brainwave()
-    end
-end
-
-function update_brainwave()
-    brainwave.tracer_pos = 1 + brainwave.tracer_pos
-    if brainwave.tracer_pos > 34 then
-        brainwave.tracer_pos = 0
     end
 end
 
@@ -140,19 +146,19 @@ function draw_brainwave()
     local y_end = 59
 
     for y = y_start, y_end do
-        plot_brainwave(y, y_start, y_end, 14)
+        draw_brain_scan(y, y_start, y_end, 14)
     end
 
     local tracer_start = flr(brainwave.tracer_pos)
     for i = 0, 3 do
         local tracer_y = y_start + tracer_start - i
         if tracer_y >= y_start and tracer_y <= y_end then
-            plot_brainwave(tracer_y, y_start, y_end, 2)
+            draw_brain_scan(tracer_y, y_start, y_end, 2)
         end
     end
 end
 
-function plot_brainwave(y, y_start, y_end, color)
+function draw_brain_scan(y, y_start, y_end, color)
     local x_center = 104
     local x_range = 3.5
     local total_height = y_end - y_start
