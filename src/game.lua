@@ -3,6 +3,7 @@ function game_init()
     _draw = game_draw
     device = init_device()
     brainwave = init_brainwave()
+    monster = init_monster()
     score = 0
     log("== Game Init ==")
 end
@@ -24,9 +25,18 @@ function init_brainwave()
     }
 end
 
+function init_monster()
+    return {
+        frame = 0,
+        prev_happiness = 1,
+        shake_timer = 0
+    }
+end
+
 function game_update()
     handle_device_input()
     update_brainwave()
+    update_monster()
     check_joy()
 end
 
@@ -43,6 +53,23 @@ function update_brainwave()
     brainwave.tracer_pos = 1 + brainwave.tracer_pos
     if brainwave.tracer_pos > 34 then
         brainwave.tracer_pos = 0
+    end
+end
+
+function update_monster()
+    -- Increment frame counter for bobbing animation
+    monster.frame = monster.frame + 1
+
+    -- Check if happiness changed
+    local current_happiness = happymeter()
+    if current_happiness != monster.prev_happiness then
+        monster.shake_timer = 15 -- Shake for 15 frames
+        monster.prev_happiness = current_happiness
+    end
+
+    -- Decrement shake timer
+    if monster.shake_timer > 0 then
+        monster.shake_timer = monster.shake_timer - 1
     end
 end
 
@@ -103,6 +130,7 @@ function handle_device_input()
         -- Reset device and brainwave, but keep score
         device = init_device()
         brainwave = init_brainwave()
+        monster = init_monster()
     end
 end
 
@@ -185,16 +213,35 @@ end
 function draw_monster()
     local happiness = happymeter()
 
+    -- Calculate bobbing offset (gentle up and down motion)
+    local bob_offset = sin(monster.frame / 30) * 1.5
+
+    -- Calculate shake offset (small random movements when mood changes)
+    local shake_x = 0
+    local shake_y = 0
+    if monster.shake_timer > 0 then
+        shake_x = (rnd(2) - 1) * 2
+        shake_y = (rnd(2) - 1) * 2
+    end
+
+    -- Base position
+    local base_x = 34
+    local base_y = 34
+
+    -- Apply offsets
+    local x = base_x + shake_x
+    local y = base_y + bob_offset + shake_y
+
     -- Always draw base (Mad, happiness 1)
-    spr(70, 34, 34, 3, 3)
+    spr(70, x, y, 3, 3)
 
     if happiness == 2 then
-        spr(76, 34, 42, 3, 2) -- Fear
+        spr(76, x, y + 8, 3, 2) -- Fear
     elseif happiness == 3 then
-        spr(73, 34, 42, 3, 2) -- Sad
+        spr(73, x, y + 8, 3, 2) -- Sad
     elseif happiness == 4 then
-        spr(105, 34, 42, 3, 2) -- Shy
+        spr(105, x, y + 8, 3, 2) -- Shy
     elseif happiness == 5 then
-        spr(108, 34, 42, 3, 2) -- Joy
+        spr(108, x, y + 8, 3, 2) -- Joy
     end
 end
