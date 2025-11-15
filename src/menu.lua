@@ -1,4 +1,6 @@
 function menu_init()
+    -- Play music at possition 00
+    music(0,0,7)
     _update=menu_update
     _draw=menu_draw
 end

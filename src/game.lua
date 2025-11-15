@@ -1,4 +1,6 @@
 function game_init()
+    -- Stop playing music at possition 00
+    music(-1)
     _update = game_update
     _draw = game_draw
     device = init_device()
@@ -62,7 +64,7 @@ function update_monster()
 
     -- Check if happiness changed
     local current_happiness = happymeter()
-    if current_happiness != monster.prev_happiness then
+    if current_happiness ~= monster.prev_happiness then
         monster.shake_timer = 15 -- Shake for 15 frames
         monster.prev_happiness = current_happiness
     end
@@ -159,9 +161,9 @@ function game_draw()
 
     -- Highlight selected control
     if device.selected_control == 0 then
-        rect(24, freq_y - 1, 32, freq_y + 3, 14) -- Highlight Freq control
+        rect(24, freq_y - 1, 33, freq_y + 4, 14) -- Highlight Freq control
     elseif device.selected_control == 1 then
-        rect(48, amp_y - 1, 56, amp_y + 3, 14) -- Highlight Amp control
+        rect(48, amp_y - 1, 57, amp_y + 4, 14) -- Highlight Amp control
     elseif device.selected_control == 2 then
         spr(99, 64, 88, 3, 2) -- Highlight Skip button
     end
