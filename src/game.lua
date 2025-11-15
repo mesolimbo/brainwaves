@@ -46,6 +46,7 @@ function check_joy()
     local happiness = happymeter()
     if happiness == 5 and not device.joy_attained then
         device.joy_attained = true
+        sfx(2)
         score = score + 1
         log("joy attained! score: " .. score)
     end
@@ -92,11 +93,13 @@ function handle_device_input()
         if device.selected_control < 0 then
             device.selected_control = 2
         end
+        sfx(1)
     elseif btnp(1) then -- Right
         device.selected_control = device.selected_control + 1
         if device.selected_control > 2 then
             device.selected_control = 0
         end
+        sfx(1)
     end
 
     -- Up/Down: Adjust slider values
@@ -109,6 +112,7 @@ function handle_device_input()
             device.amp_value = min(5, device.amp_value + 1)
             slider_changed = true
         end
+        sfx(1)
     elseif btnp(3) then -- Down
         if device.selected_control == 0 then
             device.freq_value = max(0, device.freq_value - 1)
@@ -117,6 +121,7 @@ function handle_device_input()
             device.amp_value = max(0, device.amp_value - 1)
             slider_changed = true
         end
+        sfx(1)
     end
 
     -- Log values when slider changes
@@ -133,6 +138,7 @@ function handle_device_input()
         device = init_device()
         brainwave = init_brainwave()
         monster = init_monster()
+        sfx(1)
     end
 end
 
