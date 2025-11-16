@@ -1,6 +1,6 @@
 # Brainwave Tuner
 
-A PICO-8 game
+A PICO-8 micro-game available to [play on itch.io](https://tinymicrobe.itch.io/brainwave).
 
 ## Usage
 
